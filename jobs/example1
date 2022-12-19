@@ -1,0 +1,24 @@
+import pyspark
+import json
+import pandas as pd
+import pandasql as ps
+from IPython.display import display
+from pyspark import SparkContext
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+
+
+spark = SparkSession.builder.master("local[1]").appName("SparkByExamples.com").getOrCreate()
+
+sc = pyspark.SparkConf()
+
+df_json = spark.read.option('multiline','true').json('C:\\Projetos\\pyspark\\contrato.json')
+
+df = df_json.select(explode("data.visoes.data.codigo_identificador_cliente_transacao"),
+                            "data.visoes.data.codigo_contrato_negociado", "data.visoes.data.transaction_type")
+
+df2 = df.select("codigo_contrato_negociado","transaction_type")
+
+#df3 = df2.select(explode("transaction_type.destino"))
+
+#df.printSchema()
